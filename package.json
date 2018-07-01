@@ -1,0 +1,34 @@
+{
+  "name": "genepi",
+  "version": "0.1.0",
+  "description": "fast reading library",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest tests"
+  },
+  "keywords": [
+    "fast",
+    "reading"
+  ],
+  "author": "gs",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "jest": "^23.2.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 50,
+        "functions": 100,
+        "lines": 90,
+        "statements": 2
+      }
+    }
+  }
+}
