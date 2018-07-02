@@ -1,7 +1,7 @@
 'use strict'
 
 function split(text) {
-  return text.match(/[àäëéèêàïîöôça-z0-9']+[,.]?( ?[;:!?])?/gi)
+  return text.match(/[^\s.;,!?]+[,.]?( ?[;:!?])?/gi)
 }
 
 module.exports = {

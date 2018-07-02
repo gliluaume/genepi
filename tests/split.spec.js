@@ -40,4 +40,16 @@ describe('Split', () => {
     const actual = split(input)
     expect(actual).toEqual(expected)
   })
+  it('can split with punctuation in russian', () => {
+    const input = 'На купюре, к игры.'
+    const expected = ['На', 'купюре,', 'к', 'игры.']
+    const actual = split(input)
+    expect(actual).toEqual(expected)
+  })
+  it('can split a spanish question', () => {
+    const input = '¿Quién es, la eliminación?'
+    const expected = ['¿Quién', 'es,', 'la', 'eliminación?']
+    const actual = split(input)
+    expect(actual).toEqual(expected)
+  })
 })
