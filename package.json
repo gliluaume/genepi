@@ -1,6 +1,6 @@
 {
   "name": "genepi",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "fast reading library",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,9 @@
     "reading"
   ],
   "author": "gs",
-  "engines" : { "node" : ">=10.0.0" },
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "license": "ISC",
   "devDependencies": {
     "eslint-config-standard": "^11.0.0",
