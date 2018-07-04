@@ -1,6 +1,6 @@
 'use strict'
 
-const { pivot } = require('../pivot')
+const { pivot } = require('../lib/pivot')
 
 describe('Pivot', () => {
   describe('determines char pivot index in a word according to its length', () => {

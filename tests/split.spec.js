@@ -1,6 +1,6 @@
 'use strict'
 
-const { split } = require('../split')
+const { split } = require('../lib/split')
 
 describe('Split', () => {
   it('can split words with punctuation in english', () => {

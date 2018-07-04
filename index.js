@@ -1,7 +1,7 @@
 'use strict'
 
-const { split } = require('./split')
-const { pivot } = require('./pivot')
+const { split } = require('./lib/split')
+const { pivot } = require('./lib/pivot')
 
 /**
  * Iterate through words using outputter as a plugin
