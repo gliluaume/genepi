@@ -4,15 +4,19 @@
   "description": "fast reading library",
   "main": "index.js",
   "scripts": {
-    "test": "jest tests"
+    "test": "eslint *.js lib tests && jest tests"
   },
+  "files": [
+    "index.js",
+    "lib/**/*"
+  ],
   "keywords": [
     "fast-reading",
     "library"
   ],
   "author": "gs",
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=8.0.0"
   },
   "license": "GNU",
   "devDependencies": {
