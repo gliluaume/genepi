@@ -2,6 +2,10 @@
   "name": "genepi",
   "version": "1.0.0",
   "description": "fast reading library",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gliluaume/genepi"
+  },
   "main": "index.js",
   "scripts": {
     "test": "eslint *.js lib tests && jest tests"
