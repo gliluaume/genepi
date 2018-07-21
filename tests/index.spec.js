@@ -8,23 +8,20 @@ const outputter = {
   footer: function footer() {}
 }
 
-function testUseOfOutputter(readingFunc) {
-  const spyHeader = jest.spyOn(outputter, 'header')
-  const spyInner = jest.spyOn(outputter, 'inner')
-  const spyFooter = jest.spyOn(outputter, 'footer')
-  const text = 'This is a splendid textstring.'
+jest.setTimeout(100)
 
-  return readingFunc(text, outputter, 1).then(() => {
-    expect(spyHeader).toHaveBeenCalled()
-    expect(spyInner).toHaveBeenCalled()
-    expect(spyFooter).toHaveBeenCalled()
-    expect(spyInner).toHaveBeenCalled()
-    expect(spyInner).toBeCalledWith('This', 1)
-    expect(spyInner).toBeCalledWith('is', 1)
-    expect(spyInner).toBeCalledWith('a', 0)
-    expect(spyInner).toBeCalledWith('splendid', 2)
-    expect(spyInner).toBeCalledWith('textstring.', 3)
-  }).then(() => {
+describe('Genepi', () => {
+  let spyHeader
+  let spyInner
+  let spyFooter
+
+  beforeEach(() => {
+    spyHeader = jest.spyOn(outputter, 'header')
+    spyInner = jest.spyOn(outputter, 'inner')
+    spyFooter = jest.spyOn(outputter, 'footer')
+  })
+
+  afterEach(() => {
     spyHeader.mockReset()
     spyHeader.mockRestore()
     spyInner.mockReset()
@@ -32,52 +29,92 @@ function testUseOfOutputter(readingFunc) {
     spyFooter.mockReset()
     spyFooter.mockRestore()
   })
-}
-
-describe('Genepi', () => {
-  describe('genepi function iterates on a string containing words', () => {
-    it('uses an outputter class [integration]', () => {
-      testUseOfOutputter(genepi)
-    })
-    it('calls outputter with a 200ms delay by default', () => {
-      jest.useFakeTimers()
-      const spyHeader = jest.spyOn(outputter, 'header')
-      const spyInner = jest.spyOn(outputter, 'inner')
-      const spyFooter = jest.spyOn(outputter, 'footer')
-
-      const text = 'This.'
-
-      genepi(text, outputter)
-
-      try {
-        expect(spyHeader).toBeCalled()
-        expect(spyInner).not.toBeCalled()
-        expect(spyFooter).not.toBeCalled()
-
-        jest.advanceTimersByTime(200)
-        expect(spyInner).toBeCalled()
-        expect(spyFooter).not.toBeCalled()
-
-        jest.advanceTimersByTime(200)
-        expect(spyFooter).toBeCalled()
-      } finally {
-        spyHeader.mockReset()
-        spyHeader.mockRestore()
-        spyInner.mockReset()
-        spyInner.mockRestore()
-        spyFooter.mockReset()
-        spyFooter.mockRestore()
-      }
-    })
-  })
 
   describe('GenepiReader', () => {
     it('uses an outputter class [integration]', () => {
       const reader = new GenepiReader()
-      testUseOfOutputter(reader.play.bind(reader))
+      const text = 'This is a splendid textstring.'
+
+      return reader.play(text, outputter, 1).then(() => {
+        expect(spyHeader).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyFooter).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyInner).toBeCalledWith('This', 1)
+        expect(spyInner).toBeCalledWith('is', 1)
+        expect(spyInner).toBeCalledWith('a', 0)
+        expect(spyInner).toBeCalledWith('splendid', 2)
+        expect(spyInner).toBeCalledWith('textstring.', 3)
+      })
     })
-    it('can play forward', () => {})
+    it('can play forward from a given word index', () => {
+      const reader = new GenepiReader()
+      const text = 'This is a splendid textstring.'
+
+      return reader.play(text, outputter, 1, 2).then(() => {
+        expect(spyHeader).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyFooter).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyInner).not.toBeCalledWith('This', 1)
+        expect(spyInner).not.toBeCalledWith('is', 1)
+        expect(spyInner).toBeCalledWith('a', 0)
+        expect(spyInner).toBeCalledWith('splendid', 2)
+        expect(spyInner).toBeCalledWith('textstring.', 3)
+      })
+    })
     it('can play backward', () => {})
     it('can change delay', () => {})
+  })
+
+  describe('genepi function iterates on a string containing words', () => {
+    it('uses an outputter class [integration]', () => {
+      const text = 'This is a splendid textstring.'
+
+      return genepi(text, outputter, 1).then(() => {
+        expect(spyHeader).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyFooter).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyInner).toBeCalledWith('This', 1)
+        expect(spyInner).toBeCalledWith('is', 1)
+        expect(spyInner).toBeCalledWith('a', 0)
+        expect(spyInner).toBeCalledWith('splendid', 2)
+        expect(spyInner).toBeCalledWith('textstring.', 3)
+      })
+    })
+    it('uses an outputter class [integration] deux', () => {
+      const text = 'This ot.'
+
+      return genepi(text, outputter, 1).then(() => {
+        expect(spyHeader).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyFooter).toHaveBeenCalled()
+        expect(spyInner).toHaveBeenCalled()
+        expect(spyInner).toBeCalledWith('This', 1)
+        expect(spyInner).toBeCalledWith('ot.', 1)
+        expect(spyInner).not.toBeCalledWith('a', 0)
+        expect(spyInner).not.toBeCalledWith('splendid', 2)
+        expect(spyInner).not.toBeCalledWith('textstring.', 3)
+      })
+    })
+    // TODO see why test put after this one fail (is it specific to current usage?)
+    it('calls outputter with a 200ms delay by default', () => {
+      jest.useFakeTimers()
+      const text = 'This.'
+
+      genepi(text, outputter)
+
+      expect(spyHeader).toBeCalled()
+      expect(spyInner).not.toBeCalled()
+      expect(spyFooter).not.toBeCalled()
+
+      jest.advanceTimersByTime(200)
+      expect(spyInner).toBeCalled()
+      expect(spyFooter).not.toBeCalled()
+
+      jest.advanceTimersByTime(200)
+      expect(spyFooter).toBeCalled()
+    })
   })
 })
