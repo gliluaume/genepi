@@ -8,7 +8,8 @@
   },
   "main": "index.js",
   "scripts": {
-    "test": "eslint *.js lib tests && jest tests"
+    "test": "eslint *.js lib tests && jest tests",
+    "dev": "jest tests --watch"
   },
   "files": [
     "index.js",
