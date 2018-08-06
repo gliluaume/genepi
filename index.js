@@ -16,6 +16,10 @@ class GenepiReader {
     this._prom = null
   }
 
+  get delay() {
+    return this._delay
+  }
+
   pause() {
     // bluebird cancel is synchronous
     this._prom.cancel()

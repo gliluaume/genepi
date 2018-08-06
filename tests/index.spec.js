@@ -133,6 +133,11 @@ describe('Genepi', () => {
     })
   })
   describe('GenepiReader advanced', () => {
+    it('can return delay', () => {
+      const reader = new GenepiReader()
+      expect(reader.delay).toBe(200)
+    })
+
     it('can be paused and resumed', () => {
       jest.useFakeTimers()
       const text = 'This is a splendid textstring.'
@@ -149,6 +154,7 @@ describe('Genepi', () => {
       ])
       const currentIndex = reader.pause()
       expect(currentIndex).toBe(2)
+      expect(reader._prom.isCancelled()).toBe(true)
       jest.advanceTimersByTime(1000)
 
       expect(spyInner.mock.calls).toEqual([
@@ -156,6 +162,7 @@ describe('Genepi', () => {
         ['is', 1]
       ])
       reader.resume(text, outputter)
+      expect(reader._prom.isCancelled()).toBe(false)
       jest.advanceTimersByTime(1000)
       expect(spyInner.mock.calls).toEqual([
         ['This', 1],
