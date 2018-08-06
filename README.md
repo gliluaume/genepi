@@ -24,3 +24,10 @@ function genepize(text) {
 genepize('This is a text')
   .then(() => console.log('end of treatment'))
 ```
+
+## API
+__GenepiReader__ object provide function to change reading parameters
+ * `genepiReader.pause()` stop reading and returns current position
+ * `resume(text, outputter, backward = false)` is an alias of `play`
+    return this.play(text, outputter, this._delay, this._currentIndex, backward)
+ * `play(text, outputter, delayMs = 200, position = 0, backward = false)` returns a promise resolved when reading is complete
