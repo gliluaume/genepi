@@ -9,15 +9,42 @@ BluPromise.config({
 })
 
 class GenepiReader {
-  constructor() {
+  constructor(text, outputter) {
     this._delay = 200
     this._currentIndex = 0
     this._backward = false
     this._prom = null
+    this._outputter = outputter
+    this._text = text
+  }
+
+  get isBackward() {
+    return this._backward
   }
 
   get delay() {
     return this._delay
+  }
+
+  get position() {
+    return this._currentIndex
+  }
+
+  get status() {
+    if (this._prom === null) {
+      return 'init'
+    }
+    if (this._prom.isFulfilled()) {
+      return 'end'
+    }
+    if (this._prom.isCancelled()) {
+      return 'paused'
+    }
+    // actually this line is tested, istanbul does not see it. TODO see why
+    /* istanbul ignore next */
+    if (this._prom.isPending()) {
+      return 'reading'
+    }
   }
 
   pause() {
@@ -26,11 +53,24 @@ class GenepiReader {
     return this._currentIndex
   }
 
-  resume(text, outputter, backward = false) {
-    return this.play(text, outputter, this._delay, this._currentIndex, backward)
+  read(delayMs = 200, position = 0, backward = false) {
+    return this.play(this._text,
+      this._outputter,
+      this._delay || delayMs,
+      this._position || position,
+      this._backward || backward)
+  }
+
+  resume(text, outputter) {
+    return this.play(this._text || text,
+      this._outputter || outputter,
+      this._delay,
+      this._currentIndex,
+      this._backward)
   }
 
   play(text, outputter, delayMs = 200, position = 0, backward = false) {
+    this._backward = backward
     this._delay = delayMs
     this._currentIndex = position
     // TODO avoid duplication
