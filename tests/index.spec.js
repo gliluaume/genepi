@@ -179,6 +179,18 @@ describe('Genepi', () => {
   })
 
   describe('Provide simple API', () => {
+    it('resolves immediately on too great index', () => {
+      jest.useFakeTimers()
+      const text = 'This is a splendid textstring.'
+      const reader = new GenepiReader(text, outputter)
+
+      reader.read(300, 10)
+      jest.advanceTimersByTime(5)
+
+      expect(reader._prom.isResolved()).toBe(true)
+      expect(reader.status).toBe('end')
+    })
+
     it('can be paused and resumed', () => {
       jest.useFakeTimers()
       const text = 'This is a splendid textstring.'
@@ -187,6 +199,7 @@ describe('Genepi', () => {
       expect(reader.status).toBe('init')
       reader.read()
       expect(reader.status).toBe('reading')
+      expect(reader.length).toBe(5)
 
       expect(reader.isBackward).toBe(false)
       expect(reader.delay).toBe(200)

@@ -16,6 +16,12 @@ class GenepiReader {
     this._prom = null
     this._outputter = outputter
     this._text = text
+    this._length = 0
+    this._debugProms = []
+  }
+
+  get length() {
+    return this._length
   }
 
   get isBackward() {
@@ -48,7 +54,6 @@ class GenepiReader {
   }
 
   pause() {
-    // bluebird cancel is synchronous
     this._prom.cancel()
     return this._currentIndex
   }
@@ -56,9 +61,9 @@ class GenepiReader {
   read(delayMs = 200, position = 0, backward = false) {
     return this.play(this._text,
       this._outputter,
-      this._delay || delayMs,
-      this._position || position,
-      this._backward || backward)
+      delayMs,
+      position,
+      backward)
   }
 
   resume(text, outputter) {
@@ -70,16 +75,25 @@ class GenepiReader {
   }
 
   play(text, outputter, delayMs = 200, position = 0, backward = false) {
+    const words = split(text)
+    if (position >= words.length) {
+      this._prom = BluPromise.resolve()
+      return this._prom
+    }
+
+    this._length = words.length
     this._backward = backward
-    this._delay = delayMs
     this._currentIndex = position
+    this._delay = delayMs
     // TODO avoid duplication
     this._prom = new BluPromise((resolve, reject, onCancel) => {
       outputter.header()
-      const words = split(text)
       const time = setInterval(() => {
-        if (this._prom.isCancelled()) return // TODO un-hack
-        if ((this._currentIndex < 0) || (words.length <= this._currentIndex)) {
+        if (this._prom.isCancelled()) {
+          clearInterval(time)
+          // return // TODO un-hack
+        }
+        if ((this._currentIndex < 0) || (words.length < this._currentIndex + 1)) {
           clearInterval(time)
           outputter.footer()
           resolve()
@@ -87,12 +101,12 @@ class GenepiReader {
           const word = words[this._currentIndex]
           const index = pivot(word)
           outputter.inner(word, index)
+          this._currentIndex = this._currentIndex + (backward ? -1 : 1)
         }
-        this._currentIndex = this._currentIndex + (backward ? -1 : 1)
       }, this._delay)
       // actually this line is tested, istanbul does not see it. TODO see why
       /* istanbul ignore next */
-      onCancel && onCancel(() => clearInterval(time))
+      onCancel(() => clearInterval(time))
     })
     return this._prom
   }
