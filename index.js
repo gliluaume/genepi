@@ -1,116 +1,8 @@
 'use strict'
 
+const { GenepiReader, GenepiReaderEE, customize } = require('./lib/reader-event-emitter')
 const { split } = require('./lib/split')
 const { pivot } = require('./lib/pivot')
-const BluPromise = require('bluebird')
-
-BluPromise.config({
-  cancellation: true
-})
-
-class GenepiReader {
-  constructor(text, outputter) {
-    this._delay = 200
-    this._currentIndex = 0
-    this._backward = false
-    this._prom = null
-    this._outputter = outputter
-    this._text = text
-    this._length = 0
-    this._debugProms = []
-  }
-
-  get length() {
-    return this._length
-  }
-
-  get isBackward() {
-    return this._backward
-  }
-
-  get delay() {
-    return this._delay
-  }
-
-  get position() {
-    return this._currentIndex
-  }
-
-  get status() {
-    if (this._prom === null) {
-      return 'init'
-    }
-    if (this._prom.isFulfilled()) {
-      return 'end'
-    }
-    if (this._prom.isCancelled()) {
-      return 'paused'
-    }
-    // actually this line is tested, istanbul does not see it. TODO see why
-    /* istanbul ignore next */
-    if (this._prom.isPending()) {
-      return 'reading'
-    }
-  }
-
-  pause() {
-    this._prom.cancel()
-    return this._currentIndex
-  }
-
-  read(delayMs = 200, position = 0, backward = false) {
-    return this.play(this._text,
-      this._outputter,
-      delayMs,
-      position,
-      backward)
-  }
-
-  resume(text, outputter) {
-    return this.play(this._text || text,
-      this._outputter || outputter,
-      this._delay,
-      this._currentIndex,
-      this._backward)
-  }
-
-  play(text, outputter, delayMs = 200, position = 0, backward = false) {
-    const words = split(text)
-    if (position >= words.length) {
-      this._prom = BluPromise.resolve()
-      return this._prom
-    }
-
-    this._length = words.length
-    this._backward = backward
-    this._currentIndex = position
-    this._delay = delayMs
-    // TODO avoid duplication
-    this._prom = new BluPromise((resolve, reject, onCancel) => {
-      outputter.header()
-      const time = setInterval(() => {
-        if (this._prom.isCancelled()) {
-          clearInterval(time)
-          // return // TODO un-hack
-        }
-        if ((this._currentIndex < 0) || (words.length < this._currentIndex + 1)) {
-          clearInterval(time)
-          outputter.footer()
-          resolve()
-        } else {
-          const word = words[this._currentIndex]
-          const index = pivot(word)
-          outputter.inner(word, index)
-          this._currentIndex = this._currentIndex + (backward ? -1 : 1)
-        }
-      }, this._delay)
-      // actually this line is tested, istanbul does not see it. TODO see why
-      /* istanbul ignore next */
-      onCancel(() => clearInterval(time))
-    })
-    return this._prom
-  }
-}
 
 /**
  * Iterate through words using outputter as a plugin
@@ -140,4 +32,9 @@ function genepi(text, outputter, delayMs = 200) {
   })
 }
 
-module.exports = { genepi, GenepiReader }
+module.exports = {
+  genepi,
+  GenepiReader,
+  GenepiReaderEE,
+  customize
+}
